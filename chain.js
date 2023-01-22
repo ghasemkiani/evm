@@ -1,3 +1,4 @@
+import d from "decimal.js";
 import Web3 from "web3";
 
 import {cutil} from "@ghasemkiani/base";
@@ -19,6 +20,18 @@ class Chain extends Obj {
 			Scan,
 			_scan: null,
 			_web3: null,
+			
+			_addressWTok: null,
+			addressZero: "0x0000000000000000000000000000000000000000",
+			
+			_contracts: null,
+			_contractProxies: null,
+			
+			gasPrice: null,
+			gasLimit: null,
+			gasLimitMax: 500000,
+			gasLimitK: 1,
+			gasPriceK: 1,
 		});
 	}
 	static def = null;
@@ -32,14 +45,19 @@ class Chain extends Obj {
 		return chain;
 	}
 	static get(arg) {
-		let chain = arg;
-		if (!(chain instanceof Chain)) {
+		let Chain = this;
+		let chain;
+		if (cutil.isNil(arg)) {
+			chain = Chain.def;
+		} else if (arg instanceof Chain) {
+			chain = arg;
+		} else {
 			arg = cutil.asString(arg).toLowerCase();
 			chain = (
-				this.list.find(({symbol}) => symbol.toLowerCase() === arg)
-				|| this.list.find(({name}) => name.toLowerCase() === arg)
-				|| this.list.find(({tok}) => tok.toLowerCase() === arg)
-				|| this.list.find(({id}) => cutil.asString(id) === arg)
+				Chain.list.find(({symbol}) => symbol.toLowerCase() === arg)
+				|| Chain.list.find(({name}) => name.toLowerCase() === arg)
+				|| Chain.list.find(({tok}) => tok.toLowerCase() === arg)
+				|| Chain.list.find(({id}) => cutil.asString(id) === arg)
 			);
 		}
 		return chain;
@@ -63,14 +81,23 @@ class Chain extends Obj {
 		}
 		return chain;
 	}
-	get symbol() {
-		if (!this._symbol) {
-			this._symbol = this.tok;
+	get contracts() {
+		if (!this._contracts) {
+			this._contracts = {};
 		}
-		return this._symbol;
+		return this._contracts;
 	}
-	set symbol(symbol) {
-		this._symbol = symbol;
+	set contracts(contracts) {
+		this._contracts = contracts;
+	}
+	get contractProxies() {
+		if (!this._contractProxies) {
+			this._contractProxies = {};
+		}
+		return this._contractProxies;
+	}
+	set contractProxies(contractProxies) {
+		this._contractProxies = contractProxies;
 	}
 	get urlEnvName() {
 		if (!this._urlEnvName) {
@@ -146,28 +173,104 @@ class Chain extends Obj {
 	set web3(web3) {
 		this._web3 = web3;
 	}
+	
+	get wtok() {
+		if (!this._wtok) {
+			this._wtok = "W" + this.tok;
+		}
+		return this._wtok;
+	}
+	set wtok(wtok) {
+		this._wtok = wtok;
+	}
+	get addressWTok() {
+		if (!this._addressWTok) {
+			this._addressWTok = this.tokenAddress(this.wtok);
+		}
+		return this._addressWTok;
+	}
+	set addressWTok(addressWTok) {
+		this._addressWTok = addressWTok;
+	}
+	isWTok(token) {
+		return this.eq(this.addressWTok, token) || this.eq(this.addressWTok, token?.address);
+	}
+	async toGetGasPrice() {
+		let web3 = this.web3;
+		let gasPrice = await web3.eth.getGasPrice();
+		gasPrice = d(gasPrice).mul(this.gasPriceK).toFixed(0);
+		gasPrice = cutil.asInteger(gasPrice);
+		this.gasPrice = gasPrice;
+		return gasPrice;
+	}
+	async toGetGasLimit() {
+		let web3 = this.web3;
+		let gasLimit = (await web3.eth.getBlock("latest")).gasLimit;
+		gasLimit = cutil.asNumber(gasLimit);
+		gasLimit = d(gasLimit).mul(this.gasLimitK).toFixed(0);
+		gasLimit = cutil.asInteger(gasLimit);
+		if(gasLimit > this.gasLimitMax) {
+			gasLimit = this.gasLimitMax;
+		}
+		this.gasLimit = gasLimit;
+		return gasLimit;
+	}
+	fromWei(value) {
+		let amount = Web3.utils.fromWei(cutil.asString(value), "ether");
+		return cutil.asNumber(amount);
+	}
+	toWei(amount) {
+		let value = Web3.utils.toWei(cutil.asNumber(amount), "ether");
+		return value;
+	}
+	async toGetBlockNumber() {
+		let {web3} = this;
+		let blockNumber = await web3.eth.getBlockNumber();
+		return blockNumber;
+	}
+	async toGetBlock(blockNumber) {
+		let {web3} = this;
+		let block = await web3.eth.getBlock(blockNumber);
+		return block;
+	}
+	async toGetBlockTimeSec(n = 10000) {
+		let {web3} = this;
+		let currentBlock = await this.toGetBlockNumber();
+		let {timestamp: timestamp1} = await this.toGetBlock(currentBlock);
+		let {timestamp: timestamp0} = await this.toGetBlock(currentBlock - n);
+		let blockTimeSec = (cutil.asNumber(timestamp1) - cutil.asNumber(timestamp0)) / n;
+		return blockTimeSec;
+	}
+	async toGetTransactionFee() {
+		let gas = await this.toGetGasLimit();
+		let gasPrice = await this.toGetGasPrice();
+		let fee = gasPrice * gas;
+		return {gas, gasPrice, fee};
+	}
+	tokenAddress(tokenId) {
+		return this.contracts[tokenId];
+	}
+	tokenId(tokenAddress) {
+		let tokId;
+		tokenAddress = cutil.asString(tokenAddress).toLowerCase();
+		for(let k of Object.keys(this.contracts)) {
+			let tokAddress = this.contracts[k];
+			if(tokAddress.toLowerCase() === tokenAddress) {
+				tokId = k;
+			}
+		}
+		return tokId;
+	}
+	tokenAddressOrProxy(tokenId) {
+		let address = tokenId(tokenAddress);
+		if (address in this.contractProxies) {
+			address = this.contractProxies[address];
+		}
+		return address;
+	}
+	eq(address1, address2) {
+		return cutil.asString(address1).toLowerCase() === cutil.asString(address2).toLowerCase();
+	}
 }
 
-const ethereum = Chain.add({
-	id: 1,
-	tok: "ETH",
-	symbol: "eth",
-	name: "Ethereum",
-	defaultUrl: "https://rpc.ankr.com/eth",
-	scanUrl: "https://api.etherscan.io/api",
-});
-
-const bnbchain = Chain.add({
-	id: 56,
-	tok: "BNB",
-	symbol: "bsc",
-	name: "BNB Smart Chain",
-	defaultUrl: "https://rpc.ankr.com/bsc",
-	scanUrl: "https://api.bscscan.com/api",
-});
-
-export {
-	Chain,
-	ethereum,
-	bnbchain,
-};
+export {Chain};
