@@ -205,7 +205,7 @@ class Chain extends Obj {
 	}
 	async toGetGasLimit() {
 		let web3 = this.web3;
-		let gasLimit = (await web3.eth.getBlock("latest")).gasLimit;
+		let {gasLimit} = await this.toGetBlock("latest");
 		gasLimit = cutil.asNumber(gasLimit);
 		gasLimit = d(gasLimit).mul(this.gasLimitK).toFixed(0);
 		gasLimit = cutil.asInteger(gasLimit);
@@ -214,6 +214,19 @@ class Chain extends Obj {
 		}
 		this.gasLimit = gasLimit;
 		return gasLimit;
+	}
+	async toEstimateGas(tx) {
+		let chain = this;
+		let {web3} = chain;
+		let gas;
+		try {
+			gas = await web3.eth.estimateGas(tx);
+			gas = d(gas).mul(chain.gasLimitK).toFixed(0);
+			gas = cutil.asInteger(gas);
+		} catch(e) {
+			gas = chain.gasLimitMax;
+		}
+		return gas;
 	}
 	fromWei(value) {
 		let amount = Web3.utils.fromWei(cutil.asString(value), "ether");

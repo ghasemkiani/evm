@@ -77,11 +77,11 @@ class Account extends cutil.mixin(Obj, iwchain) {
 	}
 	async toGetTokenBalance_(tokenId) {
 		let account = this;
+		let {chain} = account;
 		let balance_;
-		if(tokenId === account.chain.tok) {
+		if(tokenId === chain.tok) {
 			balance_ = await account.toGetBalance_();
 		} else {
-			let {chain} = account;
 			let {web3} = chain;
 			let {address} = account;
 			let id = tokenId;
@@ -100,40 +100,82 @@ class Account extends cutil.mixin(Obj, iwchain) {
 	}
 	async toGetTokenBalance(tokenId) {
 		let account = this;
+		let {chain} = account;
 		let balance;
-		if(tokenId === this.chain.tok) {
-			balance = await this.toGetBalance();
+		if(tokenId === chain.tok) {
+			balance = await account.toGetBalance();
 		} else {
 			await account.toGetTokenBalance_(tokenId);
-			balance = this.balances[tokenId];
+			balance = account.balances[tokenId];
 		}
 		return balance;
 	}
-	async toTransfer({amount_, amount, toAddress}) {
-		let web3 = this.chain.web3;
-		let privateKey = this.key;
-		return await this.chain.toTransfer({amount_, amount, toAddress, privateKey});
+	async toTransfer({amount_, amount, toAddress, gas, gasPrice}) {
+		let account = this;
+		let {chain} = account;
+		if(cutil.isNil(gasPrice)) {
+			if(cutil.isNil(chain.gasPrice)) {
+				await chain.toGetGasPrice();
+			}
+			gasPrice = chain.gasPrice;
+		}
+		if(cutil.isNil(gas)) {
+			gas = await chain.toGetGasLimit();
+		}
+		let value = cutil.isNil(amount_) ? chain.toWei(amount) : amount_;
+		let to = toAddress;
+		let receipt = await account.toSend({to, value, gas, gasPrice});
+		return receipt;
 	}
-	async toTransferToken({amount_, amount, token, toAddress}) {
-		if(token === this.chain.tok) {
-			return await this.toTransfer({amount_, amount, toAddress});
+	async toTransferToken({amount_, amount, tokenId, toAddress, gas, gasPrice}) {
+		let account = this;
+		let {chain} = account;
+		let receipt;
+		if(tokenId === chain.tok) {
+			receipt = await account.toTransfer({amount_, amount, toAddress, gas, gasPrice});
 		} else {
-			let web3 = this.chain.web3;
-			let privateKey = this.key;
-			let tokenAddress = this.chain.contracts[token];
+			let {web3} = chain;
+			let {address} = account;
+			let id = tokenId;
+			let abi = ERC20;
+			let tokenAddress = chain.tokenAddressOrProxy(tokenId);
 			if(!tokenAddress) {
 				throw new Error(`Token '${token}' not found (contract address not defined)`);
 			}
-			return await this.chain.toTransferToken({amount_, amount, tokenAddress, toAddress, privateKey});
+			let contract = new web3.eth.Contract(abi, tokenAddress);
+			let decimals = await contract.methods["decimals"]().call();
+			if (cutil.isNil(amount_)) {
+				amount_ = d(amount).mul(10 ** decimals);
+			}
+			let data = contract.methods["transfer"](toAddress, amount_).encodeABI();
+			let value = 0;
+			let to = tokenAddress;
+			if(cutil.isNil(gasPrice)) {
+				if(cutil.isNil(chain.gasPrice)) {
+					await chain.toGetGasPrice();
+				}
+				gasPrice = chain.gasPrice;
+			}
+			if(cutil.isNil(gas)) {
+				gas = await chain.toEstimateGas({to, value, data});
+			}
+			receipt = await account.toSend({to, value, data, gas, gasPrice});
 		}
+		return receipt;
 	}
 	async toSignTransaction(options) {
-		let privateKey = this.key;
-		let signed = await this.chain.web3.eth.accounts.signTransaction(options, privateKey);
-		return signed;
+		let account = this;
+		let {chain} = account;
+		let {key} = account;
+		let {web3} = chain;
+		let result = await web3.eth.accounts.signTransaction(options, key);
+		return result;
 	}
 	async toSendSignedTransaction(rawTransaction) {
-		let receipt = await this.chain.web3.eth.sendSignedTransaction(rawTransaction);
+		let account = this;
+		let {chain} = account;
+		let {web3} = chain;
+		let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
 		return receipt;
 	}
 	async toSend(options) {
@@ -149,14 +191,8 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		let from = address;
 		let value = 0;
 		let gasPrice = await chain.toGetGasPrice();
-		let gas;
-		try {
-			gas = await web3.eth.estimateGas({from, data});
-		} catch(e) {
-			gas = chain.gasLimitMax;
-		}
-		let options = {value, gas, gasPrice, data};
-		let receipt = await account.toSend(options);
+		let gas = await chain.toEstimateGas({value, from, data});
+		let receipt = await account.toSend({value, from, data, gas, gasPrice});
 		return receipt;
 	}
 }
