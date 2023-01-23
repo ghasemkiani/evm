@@ -23,6 +23,8 @@ class Chain extends Obj {
 			
 			_addressWTok: null,
 			addressZero: "0x0000000000000000000000000000000000000000",
+			addressOne: "0x0000000000000000000000000000000000000001",
+			addressTwo: "0x0000000000000000000000000000000000000002",
 			
 			_contracts: null,
 			_contractProxies: null,
