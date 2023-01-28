@@ -7,6 +7,8 @@ const bnbchain = Chain.add({
 	name: "BNB Smart Chain",
 	defaultUrl: "https://rpc.ankr.com/bsc",
 	scanUrl: "https://api.bscscan.com/api",
+	contracts: {},
+	contractProxies: {},
 });
 
 const bnbchainTestnet = Chain.add({
