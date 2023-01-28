@@ -1,4 +1,4 @@
-import {cchain} from "@ghasemkiani/base";
+import {cutil} from "@ghasemkiani/base";
 
 import {Account} from "./account.js";
 
@@ -7,6 +7,7 @@ class Contract extends Account {
 		cchain.extend(this.prototype, {
 			abi: null,
 			account: null,
+			_contract: null,
 		});
 	}
 	async toGetAbi() {
@@ -24,7 +25,6 @@ class Contract extends Account {
 		let result = this.scan.toRemoveContractAbiFromCache(address);
 		return result;
 	}
-	_contract: null,
 	get contract() {
 		if(!this._contract) {
 			let web3 = this.chain.web3;
