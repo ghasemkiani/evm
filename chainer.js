@@ -19,6 +19,12 @@ const chainer = cutil.extend({}, iwchain, {
 		let {chain} = this;
 		return cutil.assign(new Token(...rest), {chain});
 	},
+	wtoken(arg) {
+		let {chain} = this;
+		let id = this.wtok;
+		arg = cutil.extend(Object(arg), {id});
+		return cutil.assign(new Token(arg), {chain});
+	},
 });
 
 export {chainer};

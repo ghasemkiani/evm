@@ -28,6 +28,7 @@ class Chain extends Obj {
 			
 			_contracts: null,
 			_contractProxies: null,
+			_tokenDecimals: null,
 			
 			gasPrice: null,
 			gasLimit: null,
@@ -101,10 +102,20 @@ class Chain extends Obj {
 	set contractProxies(contractProxies) {
 		this._contractProxies = contractProxies;
 	}
+	get tokenDecimals() {
+		if (!this._tokenDecimals) {
+			this._tokenDecimals = {};
+		}
+		return this._tokenDecimals;
+	}
+	set tokenDecimals(tokenDecimals) {
+		this._tokenDecimals = tokenDecimals;
+	}
 	get urlEnvName() {
 		if (!this._urlEnvName) {
 			this._urlEnvName = `${this.symbol.toUpperCase()}_NODE`;
 		}
+		return this._urlEnvName;
 	}
 	set urlEnvName(urlEnvName) {
 		this._urlEnvName = urlEnvName;
@@ -113,6 +124,7 @@ class Chain extends Obj {
 		if (!this._scanUrlEnvName) {
 			this._scanUrlEnvName = `${this.symbol.toUpperCase()}_SCAN_URL`;
 		}
+		return this._scanUrlEnvName;
 	}
 	set scanUrlEnvName(scanUrlEnvName) {
 		this._scanUrlEnvName = scanUrlEnvName;
@@ -121,6 +133,7 @@ class Chain extends Obj {
 		if (!this._scanTokenEnvName) {
 			this._scanTokenEnvName = `${this.symbol.toUpperCase()}_SCAN_TOKEN`;
 		}
+		return this._scanTokenEnvName;
 	}
 	set scanTokenEnvName(scanTokenEnvName) {
 		this._scanTokenEnvName = scanTokenEnvName;
@@ -277,7 +290,7 @@ class Chain extends Obj {
 		return tokId;
 	}
 	tokenAddressOrProxy(tokenId) {
-		let address = tokenId(tokenAddress);
+		let address = this.tokenAddress(tokenId);
 		if (address in this.contractProxies) {
 			address = this.contractProxies[address];
 		}
