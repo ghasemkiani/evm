@@ -9,4 +9,5 @@ export * from "./chainer.js";
 
 export * from "./ethereum.js";
 export * from "./bnbchain.js";
+export * from "./polygon.js";
 export * from "./avalanche.js";
