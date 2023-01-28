@@ -4,7 +4,7 @@ import {Account} from "./account.js";
 
 class Contract extends Account {
 	static {
-		cchain.extend(this.prototype, {
+		cutil.extend(this.prototype, {
 			abi: null,
 			account: null,
 			_contract: null,
