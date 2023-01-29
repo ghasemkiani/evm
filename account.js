@@ -86,7 +86,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
 			let {address} = account;
 			let id = tokenId;
 			let abi = ERC20;
-			let tokenAddress = chain.tokenAddressOrProxy(tokenId);
+			let tokenAddress = chain.tokenAddress(tokenId);
 			if(!tokenAddress) {
 				throw new Error(`Token '${token}' not found (contract address not defined)`);
 			}
@@ -138,7 +138,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
 			let {address} = account;
 			let id = tokenId;
 			let abi = ERC20;
-			let tokenAddress = chain.tokenAddressOrProxy(tokenId);
+			let tokenAddress = chain.tokenAddress(tokenId);
 			if(!tokenAddress) {
 				throw new Error(`Token '${token}' not found (contract address not defined)`);
 			}

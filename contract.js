@@ -22,7 +22,11 @@ class Contract extends Account {
 	}
 	async toRemoveAbiFromCache() {
 		let address = this.address;
-		let result = this.scan.toRemoveContractAbiFromCache(address);
+		let result = await this.scan.toRemoveContractAbiFromCache(address);
+		if(address in this.chain.contractProxies) {
+			address = this.chain.contractProxies[address];
+			result = await this.scan.toRemoveContractAbiFromCache(address);
+		}
 		return result;
 	}
 	get contract() {

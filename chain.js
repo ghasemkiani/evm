@@ -289,13 +289,6 @@ class Chain extends Obj {
 		}
 		return tokId;
 	}
-	tokenAddressOrProxy(tokenId) {
-		let address = this.tokenAddress(tokenId);
-		if (address in this.contractProxies) {
-			address = this.contractProxies[address];
-		}
-		return address;
-	}
 	eq(address1, address2) {
 		return cutil.asString(address1).toLowerCase() === cutil.asString(address2).toLowerCase();
 	}
