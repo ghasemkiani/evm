@@ -16,16 +16,16 @@ class Contract extends Account {
 			if(address in this.chain.contractProxies) {
 				address = this.chain.contractProxies[address];
 			}
-			this.abi = await this.scan.toGetContractAbi(address);
+			this.abi = await this.chain.scan.toGetContractAbi(address);
 		}
 		return this.abi;
 	}
 	async toRemoveAbiFromCache() {
 		let address = this.address;
-		let result = await this.scan.toRemoveContractAbiFromCache(address);
+		let result = await this.chain.scan.toRemoveContractAbiFromCache(address);
 		if(address in this.chain.contractProxies) {
 			address = this.chain.contractProxies[address];
-			result = await this.scan.toRemoveContractAbiFromCache(address);
+			result = await this.chain.scan.toRemoveContractAbiFromCache(address);
 		}
 		return result;
 	}

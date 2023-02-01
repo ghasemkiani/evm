@@ -92,7 +92,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
 			}
 			let contract = new web3.eth.Contract(abi, tokenAddress);
 			let decimals = await contract.methods["decimals"]().call();
-			let balance_ = await contract.methods["balanceOf"](address).call();
+			balance_ = await contract.methods["balanceOf"](address).call();
 			account.balances_[tokenId] = balance_;
 			account.balances[tokenId] = d(balance_).mul(10 ** -decimals).toNumber();
 		}
