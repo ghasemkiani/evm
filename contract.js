@@ -11,12 +11,27 @@ class Contract extends Account {
 		});
 	}
 	async toGetAbi() {
+		let {chain} = this;
+		let {web3} = chain;
 		if(!this.abi) {
 			let address = this.address;
 			if(address in this.chain.contractProxies) {
 				address = this.chain.contractProxies[address];
 			}
 			this.abi = await this.chain.scan.toGetContractAbi(address);
+			for (let item of this.abi) {
+				if (!item.signature) {
+					let {type, name, inputs} = item;
+					if (type === "function" || type === "event") {
+						let itemSignature = `${name}(${inputs.map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
+						if (type === "function") {
+							item.signature = web3.eth.abi.encodeFunctionSignature(itemSignature);
+						} else if (type === "event") {
+							item.signature = web3.eth.abi.encodeEventSignature(itemSignature);
+						}
+					}
+				}
+			}
 		}
 		return this.abi;
 	}
@@ -54,7 +69,7 @@ class Contract extends Account {
 			gas = chain.gasLimitMax;
 		}
 		let options = {to, value, gas, gasPrice, data};
-		console.log(options);
+		console.log(JSON.stringify(options, null, "\t"));
 		let receipt = await account.toSend(options);
 		return receipt;
 	}
