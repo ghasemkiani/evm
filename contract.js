@@ -5,33 +5,39 @@ import {Account} from "./account.js";
 class Contract extends Account {
 	static {
 		cutil.extend(this.prototype, {
-			abi: null,
+			_abi: null,
 			account: null,
 			_contract: null,
 		});
 	}
+	get abi() {
+		return this._abi;
+	}
+	set abi(abi) {
+		if (abi) {
+			for (let item of abi) {
+				if (!item.signature) {
+					let {type, name, inputs} = item;
+					if (type === "function" || type === "event") {
+						let itemSignature = `${name}(${inputs.map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
+						if (type === "function") {
+							item.signature = this.chain.web3.eth.abi.encodeFunctionSignature(itemSignature);
+						} else if (type === "event") {
+							item.signature = this.chain.web3.eth.abi.encodeEventSignature(itemSignature);
+						}
+					}
+				}
+			}
+		}
+		this._abi = abi;
+	}
 	async toGetAbi() {
-		let {chain} = this;
-		let {web3} = chain;
 		if(!this.abi) {
 			let address = this.address;
 			if(address in this.chain.contractProxies) {
 				address = this.chain.contractProxies[address];
 			}
 			this.abi = await this.chain.scan.toGetContractAbi(address);
-			for (let item of this.abi) {
-				if (!item.signature) {
-					let {type, name, inputs} = item;
-					if (type === "function" || type === "event") {
-						let itemSignature = `${name}(${inputs.map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
-						if (type === "function") {
-							item.signature = web3.eth.abi.encodeFunctionSignature(itemSignature);
-						} else if (type === "event") {
-							item.signature = web3.eth.abi.encodeEventSignature(itemSignature);
-						}
-					}
-				}
-			}
 		}
 		return this.abi;
 	}
