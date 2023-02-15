@@ -169,16 +169,22 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		let {key} = account;
 		let {web3} = chain;
 		let result = await web3.eth.accounts.signTransaction(options, key);
-		console.log(JSON.stringify(result, null, "\t"));
+		console.log(`Signing tx:\n${result.transactionHash}`);
+		// console.log(JSON.stringify(result, null, "\t"));
 		return result;
 	}
 	async toSendSignedTransaction(rawTransaction) {
 		let account = this;
 		let {chain} = account;
 		let {web3} = chain;
-		let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
-		return receipt;
-		let hash;
+		try {
+			let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
+			return receipt;
+		} catch(e) {
+			console.log(`Failed to send rawTransaction:`);
+			console.log(rawTransaction);
+			throw e;
+		}
 	}
 	async toSend(options) {
 		let {rawTransaction, transactionHash} = await this.toSignTransaction(options);
