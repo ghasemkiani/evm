@@ -75,7 +75,6 @@ class Contract extends Account {
 			gas = chain.gasLimitMax;
 		}
 		let options = {to, value, gas, gasPrice, data};
-		console.log(JSON.stringify(options, null, "\t"));
 		let receipt = await account.toSend(options);
 		return receipt;
 	}
