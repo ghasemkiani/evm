@@ -95,6 +95,16 @@ class Token extends Contract {
 		}
 		return d(s).mul(10 ** -decimals).toNumber();
 	}
+	async toWrapNumber(n) {
+		await this.toGetAbi();
+		await this.toGetDecimals();
+		return this.wrapNumber(n);
+	}
+	async toUnwrapNumber(s) {
+		await this.toGetAbi();
+		await this.toGetDecimals();
+		return this.unwrapNumber(s);
+	}
 	async toGetTotalSupply_() {
 		await this.toGetAbi();
 		let totalSupply_ = await this.toCallRead("totalSupply");
