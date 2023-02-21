@@ -261,6 +261,16 @@ class Chain extends Obj {
 		let block = await web3.eth.getBlock(blockNumber);
 		return block;
 	}
+	async toGetTransactionFromBlock(hashStringOrNumber, indexNumber) {
+		let {web3} = this;
+		let tx = await web3.eth.getTransactionFromBlock(hashStringOrNumber, indexNumber);
+		return tx;
+	}
+	async toGetTransactionReceipt(hash) {
+		let {web3} = this;
+		let receipt = await web3.eth.getTransactionReceipt(hash);
+		return receipt;
+	}
 	async toGetBlockTimeSec(n = 10000) {
 		let {web3} = this;
 		let currentBlock = await this.toGetBlockNumber();
@@ -274,6 +284,16 @@ class Chain extends Obj {
 		let gasPrice = await this.toGetGasPrice();
 		let fee = gasPrice * gas;
 		return {gas, gasPrice, fee};
+	}
+	async toGetTransaction(hash) {
+		let {web3} = this;
+		let tx = await web3.eth.getTransaction(hash);
+		return tx;
+	}
+	async toGetPendingTransactions() {
+		let {web3} = this;
+		let txs = await web3.eth.getPendingTransactions();
+		return txs;
 	}
 	tokenAddress(tokenId) {
 		return this.contracts[tokenId];

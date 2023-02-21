@@ -163,12 +163,12 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		}
 		return receipt;
 	}
-	async toSignTransaction(options) {
+	async toSignTransaction(transactionObject) {
 		let account = this;
 		let {chain} = account;
 		let {key} = account;
 		let {web3} = chain;
-		let result = await web3.eth.accounts.signTransaction(options, key);
+		let result = await web3.eth.accounts.signTransaction(transactionObject, key);
 		console.log(`Signing tx:\n${result.transactionHash}`);
 		// console.log(JSON.stringify(result, null, "\t"));
 		return result;
@@ -203,6 +203,22 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		let gas = await chain.toEstimateGas({value, from, data});
 		let receipt = await account.toSend({value, from, data, gas, gasPrice});
 		return receipt;
+	}
+	async toGetTransactionCount(defaultBlock = "latest") {
+		let account = this;
+		let {chain} = account;
+		let {web3} = chain;
+		let {address} = account;
+		let transactionCount = await web3.eth.getTransactionCount(address, defaultBlock);
+		return transactionCount;
+	}
+	async toSign(dataToSign) {
+		let account = this;
+		let {chain} = account;
+		let {web3} = chain;
+		let {address} = account;
+		let signedData = await web3.eth.sign(dataToSign, address);
+		return signedData;
 	}
 }
 
