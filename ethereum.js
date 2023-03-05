@@ -106,6 +106,19 @@ const goerli = Chain.add({
 	name: "Ethereum Goerli Testnet",
 	defaultUrl: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
 	scanUrl: "https://api-goerli.etherscan.io/api",
+	contracts: {
+		"WETH": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+		"ETH": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+		"USDC": "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C",
+		"USDT": "0xC2C527C0CACF457746Bd31B2a698Fe89de2b6d49",
+		"LINK": "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
+		"DAI": "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
+		"UNI": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+	},
+	contractProxies: {
+		"0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", // tentative and arbitrary!
+		"0xC2C527C0CACF457746Bd31B2a698Fe89de2b6d49": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", // tentative and arbitrary!
+	},
 });
 
 const kovan = Chain.add({

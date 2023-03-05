@@ -1,4 +1,5 @@
 import d from "decimal.js";
+import Web3 from "web3";
 
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
@@ -27,7 +28,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		this._address = address;
 	}
 	toChecksumAddress() {
-		this.address = Web3.utils.toChecksumAddress(this.address);
+		this.address = this.chain.toChecksumAddress(this.address);
 		return this;
 	}
 	get balances_() {

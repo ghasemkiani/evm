@@ -305,12 +305,25 @@ class Chain extends Obj {
 			let tokAddress = this.contracts[k];
 			if(tokAddress.toLowerCase() === tokenAddress) {
 				tokId = k;
+				break; // find the first occurrence
 			}
 		}
 		return tokId;
 	}
 	eq(address1, address2) {
 		return cutil.asString(address1).toLowerCase() === cutil.asString(address2).toLowerCase();
+	}
+	toChecksumAddress(address) {
+		return Web3.utils.toChecksumAddress(address);
+	}
+	async toGetPastLogs({fromBlock, toBlock, address, topics}) {
+		let {web3} = this;
+		return await web3.eth.getPastLogs({fromBlock, toBlock, address, topics});
+	}
+	async toGetCode(...args) {
+		let {web3} = this;
+		// let [address, defaultBlock] = args;
+		return await web3.eth.getCode(...args);
 	}
 }
 

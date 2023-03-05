@@ -12,3 +12,4 @@ export * from "./bnbchain.js";
 export * from "./polygon.js";
 export * from "./arbitrum.js";
 export * from "./avalanche.js";
+export * from "./celo.js";

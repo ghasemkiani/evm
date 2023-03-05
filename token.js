@@ -8,7 +8,8 @@ import {Contract} from "./contract.js";
 class Token extends Contract {
 	static {
 		cutil.extend(this.prototype, {
-			id: null,
+			_id: null,
+			_address: null,
 			decimals: null,
 			name: null,
 			symbol: null,
@@ -17,6 +18,15 @@ class Token extends Contract {
 	}
 	fromString(string) {
 		this.id = string;
+	}
+	get id() {
+		if(!this._id) {
+			this._id = this.chain.tokenId(this.address);
+		}
+		return this._id;
+	}
+	set id(id) {
+		this._id = id;
 	}
 	get address() {
 		if(!this._address) {
@@ -48,7 +58,6 @@ class Token extends Contract {
 		return this;
 	}
 	async toUpdateDecimals() {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		return this;
 	}
@@ -96,12 +105,10 @@ class Token extends Contract {
 		return d(s).mul(10 ** -decimals).toNumber();
 	}
 	async toWrapNumber(n) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		return this.wrapNumber(n);
 	}
 	async toUnwrapNumber(s) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		return this.unwrapNumber(s);
 	}
@@ -111,7 +118,6 @@ class Token extends Contract {
 		return totalSupply_;
 	}
 	async toGetTotalSupply() {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let totalSupply_ = await this.toGetTotalSupply_();
 		let totalSupply = this.unwrapNumber(totalSupply_);
@@ -123,7 +129,6 @@ class Token extends Contract {
 		return balance_;
 	}
 	async toGetBalanceOf(address) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let balance_ = await this.toGetBalanceOf_(address);
 		let balance = this.unwrapNumber(balance_);
@@ -141,7 +146,6 @@ class Token extends Contract {
 		return result;
 	}
 	async toTransfer(to, amount) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let amount_ = this.wrapNumber(amount);
 		return this.toTransfer_(to, amount_);
@@ -152,7 +156,6 @@ class Token extends Contract {
 		return result;
 	}
 	async toTransferFrom(from, to, amount) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let amount_ = this.wrapNumber(amount);
 		return this.toTransferFrom_(from, to, amount_);
@@ -163,7 +166,6 @@ class Token extends Contract {
 		return result;
 	}
 	async toApprove(spender, amount) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let amount_ = this.wrapNumber(amount);
 		return this.toApprove_(spender, amount_);
@@ -174,7 +176,6 @@ class Token extends Contract {
 		return allowance_;
 	}
 	async toGetAllowance(owner, spender) {
-		await this.toGetAbi();
 		await this.toGetDecimals();
 		let allowance_ = await this.toGetAllowance_(owner, spender);
 		let allowance = this.unwrapNumber(allowance_);

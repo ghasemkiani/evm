@@ -31,13 +31,21 @@ class Contract extends Account {
 		}
 		this._abi = abi;
 	}
-	async toGetAbi() {
+	async toGetAbi(abi) {
 		if(!this.abi) {
 			let address = this.address;
 			if(address in this.chain.contractProxies) {
 				address = this.chain.contractProxies[address];
 			}
-			this.abi = await this.chain.scan.toGetContractAbi(address);
+			try {
+				this.abi = await this.chain.scan.toGetContractAbi(address);
+			} catch(e) {
+				if (abi) {
+					this.abi = abi;
+				} else {
+					throw e;
+				}
+			}
 		}
 		return this.abi;
 	}
