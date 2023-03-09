@@ -20,7 +20,7 @@ class Token extends Contract {
 		this.id = string;
 	}
 	get id() {
-		if(!this._id) {
+		if(!this._id && this._address) {
 			this._id = this.chain.tokenId(this.address);
 		}
 		return this._id;
@@ -29,7 +29,7 @@ class Token extends Contract {
 		this._id = id;
 	}
 	get address() {
-		if(!this._address) {
+		if(!this._address && this._id) {
 			this._address = this.chain.tokenAddress(this.id);
 		}
 		return this._address;

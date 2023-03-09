@@ -88,13 +88,18 @@ class Contract extends Account {
 	}
 	findFunction(nm, index = 0) {
 		let {abi} = this;
-		let types;
-		let result = /^([^(]+)\(([^)]*)\)$/.exec(nm);
-		if (result) {
-			nm = result[1];
-			types = result[2].split(",");
+		let items;
+		if (/^([^(]+)\(([^)]*)\)$/.test(nm)) {
+			items = abi.filter(({type, name, inputs}) => {
+				let sig = `${name}(${(inputs || []).map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
+				return (type === "function") && (nm === sig);
+			});
+		} else {
+			items = abi.filter(({type, name}) => {
+				return (type === "function") && (nm === name);
+			});
 		}
-		let items = abi.filter(({type, name, inputs}) => type === "function" && name === nm && (!types || (inputs.length === types.length && inputs.every(({type}, i) => type === types[i]))));
+		// let items = abi.filter(({type, name, inputs}) => type === "function" && name === nm && (!types || (inputs.length === types.length && inputs.every(({type}, i) => type === types[i]))));
 		return items[index];
 	}
 	findEvent(nm, index = 0) {
