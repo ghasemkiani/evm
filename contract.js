@@ -89,7 +89,7 @@ class Contract extends Account {
 	findFunction(nm, index = 0) {
 		let {abi} = this;
 		let items;
-		if (/^([^(]+)\(([^)]*)\)$/.test(nm)) {
+		if (/\(/.test(nm)) {
 			items = abi.filter(({type, name, inputs}) => {
 				let sig = `${name}(${(inputs || []).map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
 				return (type === "function") && (nm === sig);

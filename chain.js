@@ -261,6 +261,11 @@ class Chain extends Obj {
 		let block = await web3.eth.getBlock(blockNumber);
 		return block;
 	}
+	async toGetTransactionCount(address, defaultBlock = "latest") {
+		let {web3} = this;
+		let transactionCount = await web3.eth.getTransactionCount(address, defaultBlock);
+		return transactionCount;
+	}
 	async toGetTransactionFromBlock(hashStringOrNumber, indexNumber) {
 		let {web3} = this;
 		let tx = await web3.eth.getTransactionFromBlock(hashStringOrNumber, indexNumber);
@@ -269,6 +274,11 @@ class Chain extends Obj {
 	async toGetTransactionReceipt(hash) {
 		let {web3} = this;
 		let receipt = await web3.eth.getTransactionReceipt(hash);
+		return receipt;
+	}
+	async toSendSignedTransaction(rawTransaction) {
+		let {web3} = this;
+		let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
 		return receipt;
 	}
 	async toGetBlockTimeSec(n = 10000) {

@@ -1,5 +1,4 @@
 import d from "decimal.js";
-import Web3 from "web3";
 
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
@@ -177,9 +176,8 @@ class Account extends cutil.mixin(Obj, iwchain) {
 	async toSendSignedTransaction(rawTransaction) {
 		let account = this;
 		let {chain} = account;
-		let {web3} = chain;
 		try {
-			let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
+			let receipt = await chain.toSendSignedTransaction(rawTransaction);
 			return receipt;
 		} catch(e) {
 			console.log(`Failed to send rawTransaction:`);
@@ -197,7 +195,6 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		let account = this;
 		let {chain} = account;
 		let {address} = account;
-		let {web3} = chain;
 		let from = address;
 		let value = 0;
 		let gasPrice = await chain.toGetGasPrice();
@@ -208,9 +205,8 @@ class Account extends cutil.mixin(Obj, iwchain) {
 	async toGetTransactionCount(defaultBlock = "latest") {
 		let account = this;
 		let {chain} = account;
-		let {web3} = chain;
 		let {address} = account;
-		let transactionCount = await web3.eth.getTransactionCount(address, defaultBlock);
+		let transactionCount = await chain.toGetTransactionCount(address, defaultBlock);
 		return transactionCount;
 	}
 	async toSign(dataToSign) {
