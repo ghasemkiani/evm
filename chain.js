@@ -207,8 +207,11 @@ class Chain extends Obj {
 	set addressWTok(addressWTok) {
 		this._addressWTok = addressWTok;
 	}
+	isTok(tokenId) {
+		return cutil.asString(tokenId) === this.tok;
+	}
 	isWTok(token) {
-		return this.eq(this.addressWTok, token) || this.eq(this.addressWTok, token?.address);
+		return this.eq(this.addressWTok, token) || this.eq(this.addressWTok, token?.address) || this.eq(this.addressWTok, this.tokenAddress(token));
 	}
 	async toGetGasPrice() {
 		let web3 = this.web3;
