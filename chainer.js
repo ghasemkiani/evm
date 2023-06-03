@@ -33,7 +33,10 @@ const chainer = cutil.extend({}, iwchain, {
 		await contract.toGetAbi();
 		let [signature, ...indexes] = topics;
 		let event = contract.abi.find(item => item.signature === signature);
-		let inputs = event?.inputs || [];
+		if (!event) {
+			return null;
+		}
+		let inputs = event.inputs || [];
 		let decoded = web3.eth.abi.decodeLog(inputs, data, event.anonymous ? topics : indexes);
 		return {event, address, decoded};
 	}
