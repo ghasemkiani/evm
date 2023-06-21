@@ -32,10 +32,10 @@ class Contract extends Account {
 		this._abi = abi;
 	}
 	async toGetAbi(abi) {
-		if(!this.abi) {
+		if (!this.abi) {
 			let address = this.address;
-			if(address in this.chain.contractProxies) {
-				address = this.chain.contractProxies[address];
+			if (this.chain.toChecksumAddress(address) in this.chain.contractProxies) {
+				address = this.chain.contractProxies[this.chain.toChecksumAddress(address)];
 			}
 			try {
 				this.abi = await this.chain.scan.toGetContractAbi(address);
@@ -52,14 +52,14 @@ class Contract extends Account {
 	async toRemoveAbiFromCache() {
 		let address = this.address;
 		let result = await this.chain.scan.toRemoveContractAbiFromCache(address);
-		if(address in this.chain.contractProxies) {
-			address = this.chain.contractProxies[address];
+		if (this.chain.toChecksumAddress(address) in this.chain.contractProxies) {
+			address = this.chain.contractProxies[this.chain.toChecksumAddress(address)];
 			result = await this.chain.scan.toRemoveContractAbiFromCache(address);
 		}
 		return result;
 	}
 	get contract() {
-		if(!this._contract) {
+		if (!this._contract) {
 			let web3 = this.chain.web3;
 			let {abi, address} = this;
 			this._contract = new web3.eth.Contract(abi, address);

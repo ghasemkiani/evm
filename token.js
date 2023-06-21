@@ -20,7 +20,7 @@ class Token extends Contract {
 		this.id = string;
 	}
 	get id() {
-		if(!this._id && this._address) {
+		if (!this._id && this._address) {
 			this._id = this.chain.tokenId(this.address);
 		}
 		return this._id;
@@ -29,7 +29,7 @@ class Token extends Contract {
 		this._id = id;
 	}
 	get address() {
-		if(!this._address && this._id) {
+		if (!this._address && this._id) {
 			this._address = this.chain.tokenAddress(this.id);
 		}
 		return this._address;
@@ -63,14 +63,14 @@ class Token extends Contract {
 	}
 	async toGetSymbol() {
 		await this.toGetAbi();
-		if(cutil.isNil(this.symbol)) {
+		if (cutil.isNil(this.symbol)) {
 			this.symbol = await this.toCallRead("symbol");
 		}
 		return this.symbol;
 	}
 	async toGetName() {
 		await this.toGetAbi();
-		if(cutil.isNil(this.name)) {
+		if (cutil.isNil(this.name)) {
 			this.name = await this.toCallRead("name");
 		}
 		return this.name;
@@ -78,11 +78,11 @@ class Token extends Contract {
 	async toGetDecimals() {
 		await this.toGetAbi();
 		try {
-			if(cutil.isNil(this.decimals)) {
+			if (cutil.isNil(this.decimals)) {
 				this.decimals = await this.toCallRead("decimals");
 			}
 		} catch(e) {
-			if(this.id in this.chain.tokenDecimals) {
+			if (this.id in this.chain.tokenDecimals) {
 				this.decimals = this.chain.tokenDecimals[this.id];
 			} else {
 				throw e;
@@ -92,14 +92,14 @@ class Token extends Contract {
 	}
 	wrapNumber(n) {
 		let {decimals} = this;
-		if(cutil.isNil(decimals)) {
+		if (cutil.isNil(decimals)) {
 			throw new Error("Token decimals not set!");
 		}
 		return d(n).mul(10 ** decimals).toFixed(0);
 	}
 	unwrapNumber(s) {
 		let {decimals} = this;
-		if(cutil.isNil(decimals)) {
+		if (cutil.isNil(decimals)) {
 			throw new Error("Token decimals not set!");
 		}
 		return d(s).mul(10 ** -decimals).toNumber();
