@@ -122,7 +122,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
 		if(cutil.isNil(gas)) {
 			gas = await chain.toGetGasLimit();
 		}
-		let value = cutil.isNil(amount_) ? chain.toWei(amount) : amount_;
+		let value = cutil.isNil(amount_) ? chain.toWei(amount).toString() : amount_;
 		let to = toAddress;
 		let receipt = await account.toSend({to, value, gas, gasPrice});
 		return receipt;
@@ -144,8 +144,8 @@ class Account extends cutil.mixin(Obj, iwchain) {
 			}
 			let contract = new web3.eth.Contract(abi, tokenAddress);
 			let decimals = await contract.methods["decimals"]().call();
-			if (cutil.isNil(amount_)) {
-				amount_ = d(amount).mul(10 ** decimals);
+			if (cutil.na(amount_)) {
+				amount_ = d(amount).mul(10 ** decimals).toFixed(0);
 			}
 			let data = contract.methods["transfer"](toAddress, amount_).encodeABI();
 			let value = 0;

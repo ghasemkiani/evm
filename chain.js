@@ -251,7 +251,7 @@ class Chain extends Obj {
 		return cutil.asNumber(amount);
 	}
 	toWei(amount) {
-		let value = Web3.utils.toWei(cutil.asNumber(amount), "ether");
+		let value = Web3.utils.toWei(cutil.asString(amount), "ether");
 		return value;
 	}
 	async toGetBlockNumber() {
