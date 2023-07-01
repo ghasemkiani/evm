@@ -326,6 +326,12 @@ class Chain extends Obj {
 	eq(address1, address2) {
 		return cutil.asString(address1).toLowerCase() === cutil.asString(address2).toLowerCase();
 	}
+	lt(address1, address2) {
+		return cutil.asString(address1).toLowerCase() < cutil.asString(address2).toLowerCase();
+	}
+	gt(address1, address2) {
+		return cutil.asString(address1).toLowerCase() > cutil.asString(address2).toLowerCase();
+	}
 	isAddress(address) {
 		return Web3.utils.isAddress(address);
 	}
