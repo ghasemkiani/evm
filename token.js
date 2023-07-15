@@ -37,18 +37,18 @@ class Token extends Contract {
 	set address(address) {
 		this._address = address;
 	}
-	async toGetAbi() {
-		let abi;
+	async toGetAbi(abi) {
+		let result;
 		try {
-			abi = await super.toGetAbi();
+			result = await super.toGetAbi(abi);
 		} catch(e) {
 			if (this.fallbackToErc20Abi) {
-				abi = this.abi = JSON.parse(JSON.stringify(ERC20));
+				result = this.abi = JSON.parse(JSON.stringify(ERC20));
 			} else {
 				throw e;
 			}
 		}
-		return abi;
+		return result;
 	}
 	async toUpdate() {
 		await this.toGetAbi();
