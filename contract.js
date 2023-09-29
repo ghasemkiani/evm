@@ -14,21 +14,7 @@ class Contract extends Account {
 		return this._abi;
 	}
 	set abi(abi) {
-		if (abi) {
-			for (let item of abi) {
-				if (!item.signature) {
-					let {type, name, inputs} = item;
-					if (type === "function" || type === "event") {
-						let itemSignature = `${name}(${inputs.map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
-						if (type === "function") {
-							item.signature = this.chain.web3.eth.abi.encodeFunctionSignature(itemSignature);
-						} else if (type === "event") {
-							item.signature = this.chain.web3.eth.abi.encodeEventSignature(itemSignature);
-						}
-					}
-				}
-			}
-		}
+		abi = this.chain.addSignatures(abi);
 		this._abi = abi;
 	}
 	async toGetAbi(abi) {

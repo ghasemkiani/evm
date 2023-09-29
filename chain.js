@@ -142,6 +142,7 @@ class Chain extends Obj {
 		if(!this._url) {
 			this._url = process.env[this.urlEnvName] || this.defaultUrl;
 		}
+		// console.log(this._url);
 		return this._url;
 	}
 	set url(url) {
@@ -346,6 +347,41 @@ class Chain extends Obj {
 		let {web3} = this;
 		// let [address, defaultBlock] = args;
 		return await web3.eth.getCode(...args);
+	}
+	addSignatures(abi) {
+		let {web3} = this;
+		if (abi) {
+			for (let item of abi) {
+				if (!item.signature) {
+					let {type, name, inputs} = item;
+					if (type === "function" || type === "event") {
+						let itemSignature = `${name}(${inputs.map((({type, components}) => type !== "tuple" ? type : `(${components.map(({type}) => type).join(",")})`)).join(",")})`;
+						if (type === "function") {
+							item.signature = web3.eth.abi.encodeFunctionSignature(itemSignature);
+						} else if (type === "event") {
+							item.signature = web3.eth.abi.encodeEventSignature(itemSignature);
+						}
+					}
+				}
+			}
+		}
+		return abi;
+	}
+	async toDecodeLog(log, logError = false) {
+		let chain = this;
+		let {web3} = chain;
+		let {scan} = chain;
+		let {address, topics, data} = log;
+		let abi = await scan.toGetContractAbi(address, logError);
+		abi = chain.addSignatures(abi);
+		let [signature, ...indexes] = topics;
+		let event = contract.abi.find(item => item.signature === signature);
+		if (!event) {
+			return null;
+		}
+		let inputs = event.inputs || [];
+		let decoded = web3.eth.abi.decodeLog(inputs, data, event.anonymous ? topics : indexes);
+		return {event, address, decoded};
 	}
 }
 

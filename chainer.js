@@ -39,7 +39,7 @@ const chainer = cutil.extend({}, iwchain, {
 		let inputs = event.inputs || [];
 		let decoded = web3.eth.abi.decodeLog(inputs, data, event.anonymous ? topics : indexes);
 		return {event, address, decoded};
-	}
+	},
 });
 
 export {chainer};
