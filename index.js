@@ -15,6 +15,5 @@ export * from "./avalanche.js";
 export * from "./arbitrum.js";
 export * from "./greenfield.js";
 export * from "./shibarium.js";
-export * from "./sepolia.js";
 export * from "./celo.js";
 export * from "./local.js";

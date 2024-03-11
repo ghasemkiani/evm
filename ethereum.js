@@ -86,6 +86,20 @@ const ethereum = Chain.add({
 
 Chain.set(ethereum); // def
 
+const sepolia = Chain.add({
+	id: 11155111,
+	tok: "ETH",
+	symbol: "sepolia",
+	name: "Sepolia",
+	defaultUrl: "https://sepolia.drpc.org/",
+	scanUrl: "https://sepolia.etherscan.io/api",
+	contracts: {
+		"WETH": "",
+		"SAVM": "0x77726BFbE61B6ad7463466fD521A3A4B89B0EFd8",
+	},
+	contractProxies: {},
+});
+
 const ropsten = Chain.add({
 	id: 3,
 	tok: "ETH",
@@ -135,4 +149,4 @@ const kovan = Chain.add({
 	scanUrl: "https://api-kovan.etherscan.io/api",
 });
 
-export {ethereum, ropsten, rinkeby, goerli, kovan};
+export {ethereum, sepolia, ropsten, rinkeby, goerli, kovan};
