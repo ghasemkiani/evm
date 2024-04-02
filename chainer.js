@@ -25,6 +25,18 @@ const chainer = cutil.extend({}, iwchain, {
 		arg = cutil.extend(Object(arg), {id});
 		return cutil.assign(new Token(arg), {chain});
 	},
+	contract_(...rest) {
+		let {account} = this;
+		return cutil.assign(this.contract(...rest), {account});
+	},
+	token_(...rest) {
+		let {account} = this;
+		return cutil.assign(this.token(...rest), {account});
+	},
+	wtoken_(...rest) {
+		let {account} = this;
+		return cutil.assign(this.wtoken(...rest), {account});
+	},
 	async toDecodeLog(log) {
 		let {chain} = this;
 		let {web3} = chain;
