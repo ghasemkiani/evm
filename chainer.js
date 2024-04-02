@@ -7,7 +7,7 @@ import {Chain} from "./chain.js";
 import {iwchain} from "./iwchain.js";
 
 const chainer = cutil.extend({}, iwchain, {
-	account(...rest) {
+	makeAccount(...rest) {
 		let {chain} = this;
 		return cutil.assign(new Account(...rest), {chain});
 	},
