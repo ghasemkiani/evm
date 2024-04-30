@@ -26,8 +26,12 @@ class Account extends cutil.mixin(Obj, iwchain) {
 	set address(address) {
 		this._address = address;
 	}
-	toChecksumAddress() {
-		this.address = this.chain.toChecksumAddress(this.address);
+	toChecksumAddress(checksum = true) {
+		if (checksum) {
+			this.address = this.chain.toChecksumAddress(this.address);
+		} else {
+			this.address = this.address.toLowerCase();
+		}
 		return this;
 	}
 	get balances_() {
