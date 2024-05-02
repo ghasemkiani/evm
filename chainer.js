@@ -5,6 +5,7 @@ import {Contract} from "./contract.js";
 import {Token} from "./token.js";
 import {Chain} from "./chain.js";
 import {iwchain} from "./iwchain.js";
+import {ERC20 as abi} from "./erc20.js";
 
 const chainer = cutil.extend({}, iwchain, {
 	makeAccount(...rest) {
@@ -36,6 +37,12 @@ const chainer = cutil.extend({}, iwchain, {
 	wtoken_(...rest) {
 		let {account} = this;
 		return cutil.assign(this.wtoken(...rest), {account});
+	},
+	tkn(...rest) {
+		return cutil.assign(this.token(...rest), {abi});
+	},
+	tkn_(...rest) {
+		return cutil.assign(this.token_(...rest), {abi});
 	},
 	async toDecodeLog(log) {
 		let {chain} = this;
