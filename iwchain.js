@@ -11,7 +11,7 @@ const iwchain = {
 		return this._chain;
 	},
 	set chain(chain) {
-		if (cutil.isString(chain)) {
+		if (cutil.isString(chain) || cutil.isNumber(chain)) {
 			chain = Chain.get(chain);
 		}
 		this._chain = chain;
