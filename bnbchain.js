@@ -5,7 +5,8 @@ const bnbchain = Chain.add({
   tok: "BNB",
   symbol: "bsc",
   name: "BNB Smart Chain",
-  defaultUrl: "https://rpc.ankr.com/bsc",
+  // defaultUrl: "https://rpc.ankr.com/bsc",
+  defaultUrl: "https://bsc-dataseed1.binance.org/",
   scanUrl: "https://api.bscscan.com/api",
   contracts: {
     CROSS_CHAIN_CONTRACT_ADDR: "0x0000000000000000000000000000000000002000",
