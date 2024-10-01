@@ -25,7 +25,7 @@ class WETH9 extends Contract {
       "transferFrom",
       src,
       dst,
-      wad
+      wad,
     );
   }
   async withdraw(wad, __value__ = 0) {

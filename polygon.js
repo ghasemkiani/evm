@@ -123,7 +123,7 @@ const polygonTestnet = Chain.add({
   tok: "MATIC",
   symbol: "polygon-testnet",
   name: "Polygon Testnet",
-  defaultUrl: "https://rpc-mumbai.maticvigil.com/",
+  defaultUrl: "https://polygon-testnet.public.blastapi.io/",
   scanUrl: "https://mumbai.polygonscan.com/api",
 });
 

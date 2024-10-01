@@ -17,7 +17,7 @@ class GreenfieldTokenHub extends Contract {
       value,
       "transferOut",
       recipient,
-      amount
+      amount,
     );
   }
 }

@@ -73,7 +73,7 @@ const chainer = cutil.extend({}, iwchain, {
     let decoded = web3.eth.abi.decodeLog(
       inputs,
       data,
-      event.anonymous ? topics : indexes
+      event.anonymous ? topics : indexes,
     );
     return { event, address, decoded };
   },

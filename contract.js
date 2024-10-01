@@ -104,7 +104,7 @@ class Contract extends Account {
         name === nm &&
         (!types ||
           (inputs.length === types.length &&
-            inputs.every(({ type }, i) => type === types[i])))
+            inputs.every(({ type }, i) => type === types[i]))),
     );
     return items[index];
   }

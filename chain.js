@@ -272,7 +272,7 @@ class Chain extends Obj {
     let { web3 } = this;
     let transactionCount = await web3.eth.getTransactionCount(
       address,
-      defaultBlock
+      defaultBlock,
     );
     return transactionCount;
   }
@@ -280,7 +280,7 @@ class Chain extends Obj {
     let { web3 } = this;
     let tx = await web3.eth.getTransactionFromBlock(
       hashStringOrNumber,
-      indexNumber
+      indexNumber,
     );
     return tx;
   }
@@ -403,7 +403,7 @@ class Chain extends Obj {
     let decoded = web3.eth.abi.decodeLog(
       inputs,
       data,
-      event.anonymous ? topics : indexes
+      event.anonymous ? topics : indexes,
     );
     return { event, address, decoded };
   }

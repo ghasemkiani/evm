@@ -93,7 +93,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
       let tokenAddress = chain.tokenAddress(tokenId);
       if (!tokenAddress) {
         throw new Error(
-          `Token '${token}' not found (contract address not defined)`
+          `Token '${token}' not found (contract address not defined)`,
         );
       }
       let contract = new web3.eth.Contract(abi, tokenAddress);
@@ -162,7 +162,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
       let tokenAddress = chain.tokenAddress(tokenId);
       if (!tokenAddress) {
         throw new Error(
-          `Token '${token}' not found (contract address not defined)`
+          `Token '${token}' not found (contract address not defined)`,
         );
       }
       let contract = new web3.eth.Contract(abi, tokenAddress);
@@ -195,7 +195,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
     let { web3 } = chain;
     let result = await web3.eth.accounts.signTransaction(
       transactionObject,
-      key
+      key,
     );
     console.log(`Signing tx:\n${result.transactionHash}`);
     // console.log(JSON.stringify(result, null, "\t"));
@@ -215,7 +215,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
   }
   async toSend(options) {
     console.log(
-      `Sending tx:\nfrom:\n${options.from}\nto:\n${options.to}\ngas:\n${options.gas}\ngasPrice:\n${d(options.gasPrice).div(1e9).toFixed(9)} GWei\ndata:\n${options.data ? "..." : "--"}`
+      `Sending tx:\nfrom:\n${options.from}\nto:\n${options.to}\ngas:\n${options.gas}\ngasPrice:\n${d(options.gasPrice).div(1e9).toFixed(9)} GWei\ndata:\n${options.data ? "..." : "--"}`,
     );
     let { rawTransaction, transactionHash } =
       await this.toSignTransaction(options);
@@ -239,7 +239,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
     let { address } = account;
     let transactionCount = await chain.toGetTransactionCount(
       address,
-      defaultBlock
+      defaultBlock,
     );
     return transactionCount;
   }
