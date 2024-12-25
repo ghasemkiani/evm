@@ -1,6 +1,5 @@
-import d from "decimal.js";
-
 import { cutil } from "@ghasemkiani/base";
+import { d } from "@ghasemkiani/decimal";
 import { ERC20 } from "./erc20.js";
 
 import { Contract } from "./contract.js";
@@ -79,7 +78,7 @@ class Token extends Contract {
     await this.toGetAbi();
     try {
       if (cutil.isNil(this.decimals)) {
-        this.decimals = await this.toCallRead("decimals");
+        this.decimals = d(await this.toCallRead("decimals")).toNumber();
       }
     } catch (e) {
       if (this.id in this.chain.tokenDecimals) {

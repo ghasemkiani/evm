@@ -1,7 +1,6 @@
-import d from "decimal.js";
-
 import { cutil } from "@ghasemkiani/base";
 import { Obj } from "@ghasemkiani/base";
+import { d } from "@ghasemkiani/decimal";
 
 import { iwchain } from "./iwchain.js";
 import { ERC20 } from "./erc20.js";
@@ -17,9 +16,9 @@ class Account extends cutil.mixin(Obj, iwchain) {
   }
   get address() {
     if (!this._address && this.key) {
-      let web3 = this.chain.web3;
+      let {client} = this.chain;
       let privateKey = this.key;
-      this._address = web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      this._address = client.privateKeyToAddress(privateKey);
     }
     return this._address;
   }
@@ -67,9 +66,9 @@ class Account extends cutil.mixin(Obj, iwchain) {
   async toGetBalance_() {
     let account = this;
     let { chain } = account;
-    let { web3 } = chain;
+    let { client } = chain;
     let { address } = account;
-    let balance_ = await web3.eth.getBalance(address);
+    let balance_ = await client.toGetBalance_(address);
     account.balance_ = balance_;
     account.balance = chain.fromWei(balance_);
     return balance_;
@@ -82,11 +81,12 @@ class Account extends cutil.mixin(Obj, iwchain) {
   async toGetTokenBalance_(tokenId) {
     let account = this;
     let { chain } = account;
+    let { client } = chain;
+    let { Contract } = client;
     let balance_;
     if (tokenId === chain.tok) {
       balance_ = await account.toGetBalance_();
     } else {
-      let { web3 } = chain;
       let { address } = account;
       let id = tokenId;
       let abi = ERC20;
@@ -96,8 +96,9 @@ class Account extends cutil.mixin(Obj, iwchain) {
           `Token '${token}' not found (contract address not defined)`,
         );
       }
-      let contract = new web3.eth.Contract(abi, tokenAddress);
+      let contract = new Contract(abi, tokenAddress);
       let decimals = await contract.methods["decimals"]().call();
+      decimals = d(decimals).toNumber();
       balance_ = await contract.methods["balanceOf"](address).call();
       account.balances_[tokenId] = balance_;
       account.balances[tokenId] = d(balance_)
@@ -155,7 +156,8 @@ class Account extends cutil.mixin(Obj, iwchain) {
         gasPrice,
       });
     } else {
-      let { web3 } = chain;
+      let { client } = chain;
+      let { Contract } = client;
       let { address } = account;
       let id = tokenId;
       let abi = ERC20;
@@ -165,7 +167,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
           `Token '${token}' not found (contract address not defined)`,
         );
       }
-      let contract = new web3.eth.Contract(abi, tokenAddress);
+      let contract = new Contract(abi, tokenAddress);
       let decimals = await contract.methods["decimals"]().call();
       if (cutil.na(amount_)) {
         amount_ = d(amount)
@@ -191,12 +193,9 @@ class Account extends cutil.mixin(Obj, iwchain) {
   async toSignTransaction(transactionObject) {
     let account = this;
     let { chain } = account;
+    let { client } = chain;
     let { key } = account;
-    let { web3 } = chain;
-    let result = await web3.eth.accounts.signTransaction(
-      transactionObject,
-      key,
-    );
+    let result = await client.toSignTransaction(transactionObject, key);
     console.log(`Signing tx:\n${result.transactionHash}`);
     // console.log(JSON.stringify(result, null, "\t"));
     return result;
@@ -246,9 +245,9 @@ class Account extends cutil.mixin(Obj, iwchain) {
   async toSign(dataToSign) {
     let account = this;
     let { chain } = account;
-    let { web3 } = chain;
+    let { client } = chain;
     let { address } = account;
-    let signedData = await web3.eth.sign(dataToSign, address);
+    let signedData = await client.toSign(dataToSign, address);
     return signedData;
   }
 }

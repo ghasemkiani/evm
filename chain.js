@@ -1,11 +1,10 @@
-import d from "decimal.js";
-import Web3 from "web3";
-
 import { cutil } from "@ghasemkiani/base";
 import { Obj } from "@ghasemkiani/base";
+import { d } from "@ghasemkiani/decimal";
 import { Client as Scan } from "@ghasemkiani/etherscan-api";
+import { Client, iwclient } from "@ghasemkiani/web3";
 
-class Chain extends Obj {
+class Chain extends cutil.mixin(Obj, iwclient) {
   static {
     cutil.extend(this.prototype, {
       _symbol: null,
@@ -19,7 +18,7 @@ class Chain extends Obj {
       tok: null,
       Scan,
       _scan: null,
-      _web3: null,
+      _provider: null,
 
       _addressWTok: null,
       addressZero: "0x0000000000000000000000000000000000000000",
@@ -68,17 +67,25 @@ class Chain extends Obj {
     Chain.def = Chain.get(...rest) || Chain.add(...rest);
     return Chain.def;
   }
+  get provider() {
+    if (cutil.na(this._provider)) {
+      this._provider = this.url;
+    }
+    return this._provider;
+  }
+  set provider(provider) {
+    this._provider = provider;
+  }
   static async toGetInjected() {
     let chain;
     let global = cutil.global();
     if ("window" in global) {
       let { window } = global;
       if ("ethereum" in window) {
-        let { ethereum } = window;
-        let web3 = new Web3(ethereum);
-        let id = await web3.eth.getChainId();
+        let { ethereum: provider } = window;
+        let id = await Client.create(provider).eth.getChainId();
         chain = Chain.get(id) || new Chain({ id });
-        chain.web3 = web3;
+        chain.provider = provider;
       }
     }
     return chain;
@@ -179,15 +186,6 @@ class Chain extends Obj {
   set scan(scan) {
     this._scan = scan;
   }
-  get web3() {
-    if (!this._web3) {
-      this._web3 = new Web3(this.url);
-    }
-    return this._web3;
-  }
-  set web3(web3) {
-    this._web3 = web3;
-  }
 
   get wtok() {
     if (!this._wtok) {
@@ -218,31 +216,33 @@ class Chain extends Obj {
     );
   }
   async toGetGasPrice() {
-    let web3 = this.web3;
-    let gasPrice = await web3.eth.getGasPrice();
-    gasPrice = d(gasPrice).mul(this.gasPriceK).toFixed(0);
+    let chain = this;
+    let { client } = chain;
+    let gasPrice = await client.toGetGasPrice();
+    gasPrice = d(gasPrice).mul(chain.gasPriceK).toFixed(0);
     gasPrice = cutil.asInteger(gasPrice);
-    this.gasPrice = gasPrice;
+    chain.gasPrice = gasPrice;
     return gasPrice;
   }
   async toGetGasLimit() {
-    let web3 = this.web3;
-    let { gasLimit } = await this.toGetBlock("latest");
+    let chain = this;
+    let { client } = chain;
+    let { gasLimit } = await client.toGetBlock("latest");
     gasLimit = cutil.asNumber(gasLimit);
-    gasLimit = d(gasLimit).mul(this.gasLimitK).toFixed(0);
+    gasLimit = d(gasLimit).mul(chain.gasLimitK).toFixed(0);
     gasLimit = cutil.asInteger(gasLimit);
-    if (gasLimit > this.gasLimitMax) {
-      gasLimit = this.gasLimitMax;
+    if (gasLimit > chain.gasLimitMax) {
+      gasLimit = chain.gasLimitMax;
     }
-    this.gasLimit = gasLimit;
+    chain.gasLimit = gasLimit;
     return gasLimit;
   }
   async toEstimateGas(tx) {
     let chain = this;
-    let { web3 } = chain;
+    let { client } = chain;
     let gas;
     try {
-      gas = await web3.eth.estimateGas(tx);
+      gas = await client.toEstimateGas(tx);
       gas = d(gas).mul(chain.gasLimitK).toFixed(0);
       gas = cutil.asInteger(gas);
     } catch (e) {
@@ -251,73 +251,66 @@ class Chain extends Obj {
     return gas;
   }
   fromWei(value) {
-    let amount = Web3.utils.fromWei(cutil.asString(value), "ether");
-    return cutil.asNumber(amount);
+    let chain = this;
+    let { client } = chain;
+    return client.fromWei(value);
   }
   toWei(amount) {
-    let value = Web3.utils.toWei(cutil.asString(amount), "ether");
-    return value;
+    let chain = this;
+    let { client } = chain;
+    return client.toWei(amount);
   }
   async toGetBlockNumber() {
-    let { web3 } = this;
-    let blockNumber = await web3.eth.getBlockNumber();
-    return blockNumber;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetBlockNumber();
   }
   async toGetBlock(blockNumber) {
-    let { web3 } = this;
-    let block = await web3.eth.getBlock(blockNumber);
-    return block;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetBlock(blockNumber);
   }
   async toGetTransactionCount(address, defaultBlock = "latest") {
-    let { web3 } = this;
-    let transactionCount = await web3.eth.getTransactionCount(
-      address,
-      defaultBlock,
-    );
-    return transactionCount;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetTransactionCount(address, defaultBlock);
   }
   async toGetTransactionFromBlock(hashStringOrNumber, indexNumber) {
-    let { web3 } = this;
-    let tx = await web3.eth.getTransactionFromBlock(
-      hashStringOrNumber,
-      indexNumber,
-    );
-    return tx;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetTransactionFromBlock(hashStringOrNumber, indexNumber);
   }
   async toGetTransactionReceipt(hash) {
-    let { web3 } = this;
-    let receipt = await web3.eth.getTransactionReceipt(hash);
-    return receipt;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetTransactionReceipt(hash);
   }
   async toSendSignedTransaction(rawTransaction) {
-    let { web3 } = this;
-    let receipt = await web3.eth.sendSignedTransaction(rawTransaction);
-    return receipt;
+    let chain = this;
+    let { client } = chain;
+    return await client.toSendSignedTransaction(rawTransaction);
   }
   async toGetBlockTimeSec(n = 10000) {
-    let { web3 } = this;
-    let currentBlock = await this.toGetBlockNumber();
-    let { timestamp: timestamp1 } = await this.toGetBlock(currentBlock);
-    let { timestamp: timestamp0 } = await this.toGetBlock(currentBlock - n);
-    let blockTimeSec =
-      (cutil.asNumber(timestamp1) - cutil.asNumber(timestamp0)) / n;
-    return blockTimeSec;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetBlockTimeSec(n);
   }
   async toGetTransactionFee() {
-    let gas = await this.toGetGasLimit();
-    let gasPrice = await this.toGetGasPrice();
+    let chain = this;
+    let gas = await chain.toGetGasLimit();
+    let gasPrice = await chain.toGetGasPrice();
     let fee = gasPrice * gas;
     return { gas, gasPrice, fee };
   }
   async toGetTransaction(hash) {
-    let { web3 } = this;
-    let tx = await web3.eth.getTransaction(hash);
-    return tx;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetTransaction(hash);
   }
   async toGetPendingTransactions() {
-    let { web3 } = this;
-    let txs = await web3.eth.getPendingTransactions();
-    return txs;
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetPendingTransactions();
   }
   tokenAddress(tokenId) {
     return this.contracts[tokenId];
@@ -353,33 +346,44 @@ class Chain extends Obj {
     );
   }
   isAddress(address) {
-    return Web3.utils.isAddress(address);
+    let chain = this;
+    let { client } = chain;
+    return client.isAddress(address);
   }
   toChecksumAddress(address) {
-    return Web3.utils.toChecksumAddress(address);
+    let chain = this;
+    let { client } = chain;
+    return client.asChecksumAddress(address);
   }
   async toGetPastLogs({ fromBlock, toBlock, address, topics }) {
-    let { web3 } = this;
-    return await web3.eth.getPastLogs({ fromBlock, toBlock, address, topics });
+    let chain = this;
+    let { client } = chain;
+    return await client.toGetPastLogs({ fromBlock, toBlock, address, topics });
   }
   async toGetCode(...args) {
-    let { web3 } = this;
+    let chain = this;
+    let { client } = chain;
     // let [address, defaultBlock] = args;
-    return await web3.eth.getCode(...args);
+    return await client.toGetCode(...args);
+  }
+  getAbiItemSignature(item) {
+    let chain = this;
+    let { type, name, inputs } = item;
+    return `${name}(${(inputs || []).map(({ type, components }) => (type !== "tuple" ? type : `(${components.map(({ type }) => type).join(",")})`)).join(",")})`;
   }
   addSignatures(abi) {
-    let { web3 } = this;
+    let chain = this;
+    let { client } = chain;
     if (abi) {
       for (let item of abi) {
         if (!item.signature) {
-          let { type, name, inputs } = item;
+          let { type } = item;
           if (type === "function" || type === "event") {
-            let itemSignature = `${name}(${inputs.map(({ type, components }) => (type !== "tuple" ? type : `(${components.map(({ type }) => type).join(",")})`)).join(",")})`;
+            let itemSignature = chain.getAbiItemSignature(item);
             if (type === "function") {
-              item.signature =
-                web3.eth.abi.encodeFunctionSignature(itemSignature);
+              item.signature = client.encodeFunctionSignature(itemSignature);
             } else if (type === "event") {
-              item.signature = web3.eth.abi.encodeEventSignature(itemSignature);
+              item.signature = client.encodeEventSignature(itemSignature);
             }
           }
         }
@@ -389,23 +393,9 @@ class Chain extends Obj {
   }
   async toDecodeLog(log, logError = false) {
     let chain = this;
-    let { web3 } = chain;
+    let { client } = chain;
     let { scan } = chain;
-    let { address, topics, data } = log;
-    let abi = await scan.toGetContractAbi(address, logError);
-    abi = chain.addSignatures(abi);
-    let [signature, ...indexes] = topics;
-    let event = contract.abi.find((item) => item.signature === signature);
-    if (!event) {
-      return null;
-    }
-    let inputs = event.inputs || [];
-    let decoded = web3.eth.abi.decodeLog(
-      inputs,
-      data,
-      event.anonymous ? topics : indexes,
-    );
-    return { event, address, decoded };
+    return await client.toDecodeLog(scan, log, logError);
   }
 }
 

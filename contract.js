@@ -48,9 +48,9 @@ class Contract extends Account {
   }
   get contract() {
     if (!this._contract) {
-      let web3 = this.chain.web3;
+      let {Contract} = this.chain.client;
       let { abi, address } = this;
-      this._contract = new web3.eth.Contract(abi, address);
+      this._contract = new Contract(abi, address);
     }
     return this._contract;
   }
@@ -61,7 +61,6 @@ class Contract extends Account {
     let contract = this;
     let { account } = contract;
     let { chain } = contract;
-    let { web3 } = chain;
     let to = contract.address;
     let gasPrice = await chain.toGetGasPrice();
     let gas;
@@ -75,19 +74,20 @@ class Contract extends Account {
     return receipt;
   }
   findFunction(nm, index = 0) {
-    let { abi } = this;
+    let contract = this;
+    let { chain } = contract;
+    let { abi } = contract;
     let items;
     if (/\(/.test(nm)) {
-      items = abi.filter(({ type, name, inputs }) => {
-        let sig = `${name}(${(inputs || []).map(({ type, components }) => (type !== "tuple" ? type : `(${components.map(({ type }) => type).join(",")})`)).join(",")})`;
-        return type === "function" && nm === sig;
-      });
+      items = abi.filter(
+        (item) =>
+          item.type === "function" && nm === chain.getAbiItemSignature(item),
+      );
     } else {
-      items = abi.filter(({ type, name }) => {
-        return type === "function" && nm === name;
-      });
+      items = abi.filter(
+        (item) => item.type === "function" && nm === item.name,
+      );
     }
-    // let items = abi.filter(({type, name, inputs}) => type === "function" && name === nm && (!types || (inputs.length === types.length && inputs.every(({type}, i) => type === types[i]))));
     return items[index];
   }
   findEvent(nm, index = 0) {
@@ -109,9 +109,8 @@ class Contract extends Account {
     return items[index];
   }
   functionData(func, ...rest) {
-    let { web3 } = this.chain;
-    let data = web3.eth.abi.encodeFunctionCall(func, rest);
-    return data;
+    let { client } = this.chain;
+    return client.functionData(func, ...rest);
   }
   callData(nm, ...rest) {
     let func = this.findFunction(nm);
