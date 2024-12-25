@@ -119,7 +119,22 @@ class Contract extends Account {
   }
   async toCallRead(method, ...rest) {
     let result = await this.contract.methods[method](...rest).call();
-    return result;
+    // workaround to convert bigint values to string for the time being...
+    const check = value => {
+      if (cutil.isBigInt(value)) {
+        value = value.toString();
+      } else if (cutil.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          value[i] = check(value[i]);
+        }
+      } else if (cutil.isObject(value)) {
+        for (let k of Object.keys(value)) {
+          value[k] = check(value[k]);
+        }
+      }
+      return value
+    };
+    return check(result);
   }
   async toCallWriteWithValue(value, method, ...rest) {
     let data = await this.contract.methods[method](...rest).encodeABI();
