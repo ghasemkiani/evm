@@ -213,12 +213,15 @@ class Account extends cutil.mixin(Obj, iwchain) {
     }
   }
   async toSend(options) {
+    let account = this;
+    let { address } = account;
+    options.from ||= address;
     console.log(
       `Sending tx:\nfrom:\n${options.from}\nto:\n${options.to}\ngas:\n${options.gas}\ngasPrice:\n${d(options.gasPrice).div(1e9).toFixed(9)} GWei\ndata:\n${options.data ? "..." : "--"}`,
     );
     let { rawTransaction, transactionHash } =
-      await this.toSignTransaction(options);
-    let receipt = await this.toSendSignedTransaction(rawTransaction);
+      await account.toSignTransaction(options);
+    let receipt = await account.toSendSignedTransaction(rawTransaction);
     return { hash: transactionHash, ...receipt };
   }
   async toDeploy(data) {
