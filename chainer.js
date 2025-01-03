@@ -58,24 +58,15 @@ const chainer = cutil.extend({}, iwchain, {
   tkn_(...rest) {
     return cutil.assign(this.token_(...rest), { abi });
   },
-  async toDecodeLog(log) {
-    let { chain } = this;
-    let { web3 } = chain;
-    let { address, topics, data } = log;
-    let contract = this.contract({ address });
-    await contract.toGetAbi();
-    let [signature, ...indexes] = topics;
-    let event = contract.abi.find((item) => item.signature === signature);
-    if (!event) {
-      return null;
-    }
-    let inputs = event.inputs || [];
-    let decoded = web3.eth.abi.decodeLog(
-      inputs,
-      data,
-      event.anonymous ? topics : indexes,
-    );
-    return { event, address, decoded };
+  async toDecodeLog(log, logError = false) {
+    let chainer = this;
+    let { chain } = chainer;
+    let { client } = chain;
+    let { address } = log;
+    let contract = chainer.contract({ address });
+    let abi = await contract.toGetAbi();
+    abi = chain.addSignatures(abi);
+    return await client.toDecodeLog(abi, log, logError);
   },
 });
 
