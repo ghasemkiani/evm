@@ -395,7 +395,9 @@ class Chain extends cutil.mixin(Obj, iwclient) {
     let chain = this;
     let { client } = chain;
     let { scan } = chain;
-    return await client.toDecodeLog(scan, log, logError);
+    let abi = await scan.toGetContractAbi(address, logError);
+    abi = chain.addSignatures(abi);
+    return await client.toDecodeLog(abi, log, logError);
   }
 }
 
