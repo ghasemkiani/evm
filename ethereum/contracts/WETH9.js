@@ -1,7 +1,7 @@
 import { cutil } from "@ghasemkiani/base";
 import { Contract } from "@ghasemkiani/evm";
 
-import abi from "./abi/WETH9.json" assert { type: "json" };
+import abi from "./abi/WETH9.json" with { type: "json" };
 
 class WETH9 extends Contract {
   static {
