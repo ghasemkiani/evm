@@ -9,6 +9,7 @@ const arbitrum = Chain.add({
   scanUrl: "https://api.arbiscan.io/api",
   contracts: {
     WETH: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+    cbBTC: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
     BTC: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
     WBTC: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
     MATIC: "0x561877b6b3DD7651313794e5F2894B2F18bE0766",
@@ -49,6 +50,8 @@ const arbitrum = Chain.add({
       "0x3f770Ac673856F105b586bb393d122721265aD46",
     "0xaf88d065e77c8cC2239327C5EDb3A432268e5831":
       "0x86E721b43d4ECFa71119Dd38c0f938A75Fdb57B3",
+    "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf":
+      "0x7458bfDC30034EB860B265E6068121D18Fa5Aa72",
   },
 });
 
