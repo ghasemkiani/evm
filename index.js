@@ -12,6 +12,7 @@ export * from "./bnbchain.js";
 export * from "./polygon.js";
 export * from "./zkevm.js";
 export * from "./avalanche.js";
+export * from "./unichain.js";
 export * from "./arbitrum.js";
 export * from "./greenfield.js";
 export * from "./shibarium.js";
