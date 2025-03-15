@@ -7,6 +7,7 @@ const avalanche = Chain.add({
   name: "Avalanche",
   defaultUrl: "https://rpc.ankr.com/avalanche",
   scanUrl: "https://api.snowtrace.io/api",
+  scanUrl: "https://api.snowscan.xyz/api",
   contracts: {
     WAVAX: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
     BTC: "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
