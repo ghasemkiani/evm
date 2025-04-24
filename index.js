@@ -6,6 +6,7 @@ export * from "./contract.js";
 export * from "./token.js";
 export * from "./erc20.js";
 export * from "./chainer.js";
+export * from "./iwchainApp.js";
 
 export * from "./ethereum.js";
 export * from "./bnbchain.js";
