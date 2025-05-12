@@ -179,6 +179,7 @@ class Chain extends cutil.mixin(Obj, iwclient) {
         endpoint: this.scanUrl,
         apiKeyToken: this.scanToken,
         cacheName: this.symbol,
+        chainId: this.id,
       });
     }
     return this._scan;
