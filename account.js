@@ -119,7 +119,7 @@ class Account extends cutil.mixin(Obj, iwchain) {
     }
     return balance;
   }
-  async toTransfer({ amount_, amount, toAddress, gas, gasPrice }) {
+  async toTransfer({ amount_, amount, toAddress, memo, gas, gasPrice }) {
     let account = this;
     let { chain } = account;
     if (cutil.isNil(gasPrice)) {
@@ -133,7 +133,11 @@ class Account extends cutil.mixin(Obj, iwchain) {
     }
     let value = cutil.isNil(amount_) ? chain.toWei(amount).toString() : amount_;
     let to = toAddress;
-    let receipt = await account.toSend({ to, value, gas, gasPrice });
+    let data = null;
+    if (cutil.a(memo)) {
+      data = Buffer.from(memo, "utf8").toString("hex");
+    }
+    let receipt = await account.toSend({ to, value, data, gas, gasPrice });
     return receipt;
   }
   async toTransferToken({
