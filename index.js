@@ -20,3 +20,4 @@ export * from "./shibarium.js";
 export * from "./celo.js";
 export * from "./base.js";
 export * from "./local.js";
+export * from "./hardhat.js";
