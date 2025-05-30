@@ -174,10 +174,11 @@ class Chain extends cutil.mixin(Obj, iwclient) {
   }
   get scan() {
     if (!this._scan) {
-      let { Scan } = this;
+      // all chains use ethersan
+      // let { Scan } = this;
       this._scan = new Scan({
-        endpoint: this.scanUrl,
-        apiKeyToken: this.scanToken,
+        // endpoint: this.scanUrl,
+        // apiKeyToken: this.scanToken,
         cacheName: this.symbol,
         chainId: this.id,
       });
