@@ -14,19 +14,19 @@ const iwchainApp = cutil.extend(chainer, {
     let app = this;
     app.commander.option(
       "--set-gas-limit-max <gasLimitMax>",
-      "Gas limit max persistently",
+      "set gas limit max persistently",
     );
     app.commander.option(
       "--set-gas-limit-k <gasLimitK>",
-      "Gas limit K persistently",
+      "set gas limit K persistently",
     );
     app.commander.option(
       "--set-gas-price-k <gasPriceK>",
-      "Gas price K persistently",
+      "set gas price K persistently",
     );
-    app.commander.option("--gas-limit-max <gasLimitMax>", "Gas limit max");
-    app.commander.option("--gas-limit-k <gasLimitK>", "Gas limit K");
-    app.commander.option("--gas-price-k <gasPriceK>", "Gas price K");
+    app.commander.option("--gas-limit-max <gasLimitMax>", "gas limit max");
+    app.commander.option("--gas-limit-k <gasLimitK>", "gas limit K");
+    app.commander.option("--gas-price-k <gasPriceK>", "gas price K");
   },
   async toApplyInitOptionsIWChainApp() {
     let app = this;
