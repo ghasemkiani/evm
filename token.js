@@ -163,7 +163,7 @@ class Token extends Contract {
     let amount_ = this.wrapNumber(amount);
     return this.toTransferFrom_(from, to, amount_);
   }
-  async toApprove_(spender, amount_) {
+  async toApprove_(spender, amount_ = (2n ** 256n - 1n).toString()) {
     await this.toGetAbi();
     let result = await this.toCallWrite("approve", spender, amount_);
     return result;
