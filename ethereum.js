@@ -100,7 +100,7 @@ const sepolia = Chain.add({
   defaultUrl: "https://sepolia.drpc.org/",
   scanUrl: "https://sepolia.etherscan.io/api",
   contracts: {
-    WETH: "",
+    WETH: "0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa",
     SAVM: "0x77726BFbE61B6ad7463466fD521A3A4B89B0EFd8",
   },
   contractProxies: {},
