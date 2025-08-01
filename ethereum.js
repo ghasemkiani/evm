@@ -113,6 +113,10 @@ const holesky = Chain.add({
   name: "Ethereum Holesky Testnet",
   defaultUrl: "https://holesky.drpc.org	",
   scanUrl: "https://api-holesky.etherscan.io/api",
+  contracts: {
+    WETH: "0x6B5817E7091BC0C747741E96820b0199388245EA",
+  },
+  contractProxies: {},
 });
 
 export { ethereum, sepolia, holesky };
