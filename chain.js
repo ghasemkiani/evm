@@ -315,19 +315,19 @@ class Chain extends cutil.mixin(Obj, iwclient) {
     return await client.toGetPendingTransactions();
   }
   tokenAddress(tokenId) {
-    return this.contracts[tokenId];
+    return this.isAddress(tokenId) ? tokenId : this.contracts[tokenId];
   }
   tokenId(tokenAddress) {
-    let tokId;
+    let tokenId;
     tokenAddress = cutil.asString(tokenAddress).toLowerCase();
     for (let k of Object.keys(this.contracts)) {
       let tokAddress = this.contracts[k];
       if (tokAddress.toLowerCase() === tokenAddress) {
-        tokId = k;
+        tokenId = k;
         break; // find the first occurrence
       }
     }
-    return tokId;
+    return tokenId;
   }
   eq(address1, address2) {
     return (
