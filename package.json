@@ -1,6 +1,6 @@
 {
   "name": "@ghasemkiani/evm",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Base client functionality for EVM-compatible blockchains",
   "type": "module",
   "main": "index.js",
