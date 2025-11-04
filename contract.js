@@ -146,8 +146,13 @@ class Contract extends Account {
     let result = await this.toCallWriteWithValue(value, method, ...rest);
     return result;
   }
-  getDeployData(data, arguments) {
-    return this.contract.deploy({ data, arguments }).encodeABI();
+  getDeployData(bytecode, args) {
+    return this.contract.deploy({ data: bytecode, arguments: args }).encodeABI();
+  }
+  async toDeploy(bytecode, args) {
+    data = this.getDeployData(bytecode, args);
+    let result = await this.toSendData(data, value);
+    return result;
   }
 }
 
