@@ -10,6 +10,7 @@ const iwchainApp = cutil.extend(chainer, {
     gasLimitK: null,
     gasPriceK: null,
   },
+  needs0x: true,
   async toDefineInitOptionsIWChainApp() {
     let app = this;
     app.commander.option(

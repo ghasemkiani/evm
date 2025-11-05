@@ -150,7 +150,8 @@ class Contract extends Account {
     return this.contract.deploy({ data: bytecode, arguments: args }).encodeABI();
   }
   async toDeploy(bytecode, args) {
-    data = this.getDeployData(bytecode, args);
+    let data = this.getDeployData(bytecode, args);
+    let value = 0;
     let result = await this.toSendData(data, value);
     return result;
   }
