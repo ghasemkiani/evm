@@ -92,22 +92,6 @@ const ethereum = Chain.add({
 
 Chain.set(ethereum); // def
 
-const sepolia = Chain.add({
-  id: 11155111,
-  tok: "ETH",
-  symbol: "sepolia",
-  name: "Sepolia",
-  defaultUrl: "https://sepolia.drpc.org/",
-  scanUrl: "https://sepolia.etherscan.io/api",
-  contracts: {
-    WETH: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14", // uniswap
-    WETH_: "0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa",
-    HEX: "0x71D141E777fBA871D4E1CeD575ABBFE3602Fc08f",
-    SAVM: "0x77726BFbE61B6ad7463466fD521A3A4B89B0EFd8",
-  },
-  contractProxies: {},
-});
-
 const holesky = Chain.add({
   id: 17000,
   tok: "ETH",
@@ -121,4 +105,26 @@ const holesky = Chain.add({
   contractProxies: {},
 });
 
-export { ethereum, sepolia, holesky };
+const sepolia = Chain.add({
+  id: 11155111,
+  tok: "ETH",
+  symbol: "sepolia",
+  name: "Sepolia",
+  defaultUrl: "https://sepolia.drpc.org/",
+  scanUrl: "https://sepolia.etherscan.io/api",
+  contracts: {
+    WETH: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14", // uniswap
+    WETH_: "0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa",
+    HEX: "0x71D141E777fBA871D4E1CeD575ABBFE3602Fc08f",
+    SAVM: "0x77726BFbE61B6ad7463466fD521A3A4B89B0EFd8",
+    wSTEEM0: "0x41F0A233cA2B624313b04568C9c7eb6B524014a8",
+    wSBD0: "0x98bfbb151f794f7adb1cfa90f0e207a63eaf098a",
+    wSTEEM1: "0x474C333a8e32f2F3f9264dd4A1EE27A1BC4b8ea1",
+    wSBD1: "0xDaBA239a88aF24dAe444C7Eb607e79d81FEe5a57",
+    wSTEEM: "0xEabA384889Ec325e6D377C1928219441953D7C55",
+    wSBD: "0x6A6b8c5Db29d91CacCF5280A7A2Fc61193603c7D",
+  },
+  contractProxies: {},
+});
+
+export { ethereum, holesky, sepolia };

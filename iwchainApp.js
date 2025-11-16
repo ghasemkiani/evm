@@ -77,6 +77,11 @@ const iwchainApp = cutil.extend(chainer, {
       console.log(`chain.gasLimitK: ${chain.gasLimitK}`);
     }
   },
+  async toShowInfoIWChainApp() {
+    let app = this;
+    let { account } = app;
+    console.log(`address: ${account?.address}`);
+  },
 });
 
 export { iwchainApp };
