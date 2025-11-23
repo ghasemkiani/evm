@@ -80,6 +80,8 @@ const iwchainApp = cutil.extend(chainer, {
   async toShowInfoIWChainApp() {
     let app = this;
     let { account } = app;
+    let { chain } = app;
+    console.log(`chain: ${chain.name} (${chain.symbol})`);
     console.log(`address: ${account?.address}`);
   },
 });
