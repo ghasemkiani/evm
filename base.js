@@ -11,6 +11,7 @@ const base = Chain.add({
     WETH: "0x4200000000000000000000000000000000000006",
     cbBTC: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
     SHIB: "0xbfFb921F1a95727E5Db5c36bCb9080056f0C5761",
+    DIEM: "0xF4d97F2da56e8c3098f3a8D538DB630A2606a024",
   },
   tokenDecimals: {},
   contractProxies: {},
