@@ -249,6 +249,12 @@ class Account extends cutil.mixin(Obj, iwchain) {
     );
     return transactionCount;
   }
+  async toGetLastSentTransaction(maxSearch = 100) {
+    let account = this;
+    let { address } = account;
+    let { chain } = account;
+    return await chain.toGetLastSentTransaction(address, maxSearch);
+  }
   async toSign(dataToSign) {
     let account = this;
     let { chain } = account;

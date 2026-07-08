@@ -5,6 +5,7 @@ const polygon = Chain.add({
   tok: "MATIC",
   symbol: "polygon",
   name: "Polygon",
+  // defaultUrl: "https://polygon.drpc.org",
   defaultUrl: "https://rpc.ankr.com/polygon",
   scanUrl: "https://api.polygonscan.com/api",
   contracts: {

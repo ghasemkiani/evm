@@ -357,6 +357,24 @@ class Chain extends cutil.mixin(Obj, iwclient) {
     let { client } = chain;
     return client.asChecksumAddress(address);
   }
+  async toGetLastSentTransaction(address, maxSearch = 100) {
+    let chain = this;
+    let { client } = chain;
+    address = cutil.asString(address).toLowerCase();
+    const latestBlockNumber = await client.toGetBlockNumber();
+    let tx;
+    for (let i = 0; i < maxSearch; i++) {
+      const blockNum = latestBlockNumber - i;
+      const block = await client.toGetBlock(blockNum, true);
+      if (block && block.transactions) {
+        tx = block.transactions.find(tx => tx.from?.toLowerCase() === address);
+        if (tx) {
+          break;
+        }
+      }
+    }
+    return tx;
+  }
   async toGetPastLogs({ fromBlock, toBlock, address, topics }) {
     let chain = this;
     let { client } = chain;
